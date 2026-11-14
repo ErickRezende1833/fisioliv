@@ -3,6 +3,10 @@ export class IdosoView {
     this.tabela = document.getElementById('tabela-idosos');
     this.form = document.getElementById('form-idoso');
     this.inputPesquisa = document.getElementById('input-pesquisa');
+    this.inputId = document.getElementById('idoso-id');
+    this.tituloForm = document.getElementById('titulo-form-idoso');
+    this.btnSalvar = document.getElementById('btn-salvar-idoso');
+    this.btnCancelar = document.getElementById('btn-cancelar-idoso');
   }
 
   // Função auxiliar para calcular a idade
@@ -19,11 +23,14 @@ export class IdosoView {
   }
 
   // Função auxiliar para criar o badge de tendência
-  gerarIndicadorTendencia(tendencia) {
+  // subirEhBom = true para a saturação (SpO2), onde subir é sinal positivo
+  gerarIndicadorTendencia(tendencia, subirEhBom = false) {
+    const corSubindo = subirEhBom ? 'bg-success' : 'bg-danger';
+    const corDescendo = subirEhBom ? 'bg-danger' : 'bg-success';
     if (tendencia === 'subindo') {
-      return '<span class="badge bg-danger ms-1" title="Tendência de alta">↑ Subindo</span>';
+      return `<span class="badge ${corSubindo} ms-1" title="Tendência de alta">↑ Subindo</span>`;
     } else if (tendencia === 'descendo') {
-      return '<span class="badge bg-success ms-1" title="Tendência de queda">↓ Descendo</span>';
+      return `<span class="badge ${corDescendo} ms-1" title="Tendência de queda">↓ Descendo</span>`;
     } else if (tendencia === 'estavel') {
       return '<span class="badge bg-secondary ms-1" title="Estável">→ Estável</span>';
     }
@@ -59,7 +66,7 @@ export class IdosoView {
           textoMediaFC = `<strong>${resumo.mediaFC} bpm</strong> ${this.gerarIndicadorTendencia(resumo.tendenciaFC)}`;
         }
         if (resumo.mediaSpO2 !== null) {
-          textoMediaSpO2 = `<strong>${resumo.mediaSpO2}%</strong> ${this.gerarIndicadorTendencia(resumo.tendenciaSpO2)}`;
+          textoMediaSpO2 = `<strong>${resumo.mediaSpO2}%</strong> ${this.gerarIndicadorTendencia(resumo.tendenciaSpO2, true)}`;
         }
       }
 
@@ -72,9 +79,15 @@ export class IdosoView {
         <td class="small">${textoMediaPA}</td>
         <td class="small">${textoMediaFC}</td>
         <td class="small">${textoMediaSpO2}</td>
-        <td class="text-end">
+        <td class="text-end text-nowrap">
           <button class="btn btn-sm btn-outline-primary btn-sessoes" data-id="${idoso.id}">
             Sessões
+          </button>
+          <button class="btn btn-sm btn-outline-secondary btn-editar-idoso" data-id="${idoso.id}" title="Editar">
+            Editar
+          </button>
+          <button class="btn btn-sm btn-outline-danger btn-remover-idoso" data-id="${idoso.id}" title="Remover">
+            Remover
           </button>
         </td>
       `;
@@ -89,7 +102,27 @@ export class IdosoView {
     };
   }
 
+  // Coloca o formulário em modo de edição, preenchido com os dados do idoso
+  preencherFormulario(idoso) {
+    this.inputId.value = idoso.id;
+    document.getElementById('nome').value = idoso.nome;
+    document.getElementById('dataNascimento').value = idoso.data_nascimento;
+    this.tituloForm.textContent = 'Editar Idoso';
+    this.btnSalvar.textContent = 'Salvar Alterações';
+    this.btnCancelar.classList.remove('d-none');
+    document.getElementById('nome').focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  obterIdEmEdicao() {
+    return this.inputId.value;
+  }
+
   limparFormulario() {
     this.form.reset();
+    this.inputId.value = '';
+    this.tituloForm.textContent = 'Cadastrar Idoso';
+    this.btnSalvar.textContent = 'Salvar Idoso';
+    this.btnCancelar.classList.add('d-none');
   }
 }

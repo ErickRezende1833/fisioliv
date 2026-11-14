@@ -6,6 +6,11 @@ export class SessaoView {
     this.form = document.getElementById('form-sessao');
     this.inputIdosoId = document.getElementById('sessao-idoso-id');
     this.containerHistorico = document.getElementById('historico-sessoes-container');
+    this.inputSessaoId = document.getElementById('sessao-id');
+    this.tituloForm = document.getElementById('titulo-form-sessao');
+    this.btnSalvar = document.getElementById('btn-salvar-sessao');
+    this.btnCancelar = document.getElementById('btn-cancelar-sessao');
+    this.sessoesAtuais = [];
   }
 
   abrirModal(idoso) {
@@ -15,7 +20,20 @@ export class SessaoView {
     this.modalBs.show();
   }
 
+  // Fecha a janela e espera a animação terminar (usado antes de abrir a confirmação)
+  esconderModal() {
+    return new Promise(resolve => {
+      this.modalElement.addEventListener('hidden.bs.modal', () => resolve(), { once: true });
+      this.modalBs.hide();
+    });
+  }
+
+  mostrarModal() {
+    this.modalBs.show();
+  }
+
   renderizarHistorico(sessoes) {
+    this.sessoesAtuais = sessoes;
     this.containerHistorico.innerHTML = '';
 
     if (sessoes.length === 0) {
@@ -35,11 +53,15 @@ export class SessaoView {
         <div class="card-body p-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <span class="badge bg-secondary">${dataHora}</span>
-            <div class="small text-muted">
-              ${sessao.pressao_arterial ? `<span class="me-2"><strong>PA:</strong> ${sessao.pressao_arterial}</span>` : ''}
-              ${sessao.frequencia_cardiaca ? `<span class="me-2"><strong>FC:</strong> ${sessao.frequencia_cardiaca} bpm</span>` : ''}
-              ${sessao.saturacao_oxigenio ? `<span><strong>SpO2:</strong> ${sessao.saturacao_oxigenio}%</span>` : ''}
+            <div class="text-nowrap">
+              <button class="btn btn-sm btn-outline-secondary btn-editar-sessao" data-id="${sessao.id}">Editar</button>
+              <button class="btn btn-sm btn-outline-danger btn-remover-sessao" data-id="${sessao.id}">Remover</button>
             </div>
+          </div>
+          <div class="small text-muted mb-2">
+            ${sessao.pressao_arterial ? `<span class="me-2"><strong>PA:</strong> ${sessao.pressao_arterial}</span>` : ''}
+            ${sessao.frequencia_cardiaca ? `<span class="me-2"><strong>FC:</strong> ${sessao.frequencia_cardiaca} bpm</span>` : ''}
+            ${sessao.saturacao_oxigenio ? `<span><strong>SpO2:</strong> ${sessao.saturacao_oxigenio}%</span>` : ''}
           </div>
           <p class="card-text small mb-0 text-dark">
             ${sessao.observacoes ? sessao.observacoes : '<em>Sem observações registradas.</em>'}
@@ -60,7 +82,35 @@ export class SessaoView {
     };
   }
 
+  buscarSessaoCarregada(id) {
+    return this.sessoesAtuais.find(s => s.id == id);
+  }
+
+  // Coloca o formulário em modo de edição, preenchido com os dados da sessão
+  preencherFormulario(sessao) {
+    this.inputSessaoId.value = sessao.id;
+    document.getElementById('pa').value = sessao.pressao_arterial || '';
+    document.getElementById('fc').value = sessao.frequencia_cardiaca ?? '';
+    document.getElementById('spo2').value = sessao.saturacao_oxigenio ?? '';
+    document.getElementById('observacoes').value = sessao.observacoes || '';
+    this.tituloForm.textContent = 'Editar Sessão';
+    this.btnSalvar.textContent = 'Salvar Alterações';
+    this.btnCancelar.classList.remove('d-none');
+    this.modalElement.querySelector('.modal-body').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  obterIdEmEdicao() {
+    return this.inputSessaoId.value;
+  }
+
   limparFormulario() {
+    // Guarda o id do idoso, pois o reset do formulário apagaria o campo oculto
+    const idosoId = this.inputIdosoId.value;
     this.form.reset();
+    this.inputIdosoId.value = idosoId;
+    this.inputSessaoId.value = '';
+    this.tituloForm.textContent = 'Registrar Nova Sessão';
+    this.btnSalvar.textContent = 'Salvar Sessão';
+    this.btnCancelar.classList.add('d-none');
   }
 }
