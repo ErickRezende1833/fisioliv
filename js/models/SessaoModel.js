@@ -30,6 +30,39 @@ export class SessaoModel {
     return data;
   }
 
+  static async atualizar(id, sessao) {
+    const { data, error } = await supabase
+      .from('sessoes_fisioterapia')
+      .update({
+        pressao_arterial: sessao.pressaoArterial,
+        frequencia_cardiaca: sessao.frequenciaCardiaca ? parseInt(sessao.frequenciaCardiaca) : null,
+        saturacao_oxigenio: sessao.saturacaoOxigenio ? parseInt(sessao.saturacaoOxigenio) : null,
+        observacoes: sessao.observacoes
+      })
+      .eq('id', id)
+      .select();
+
+    if (error) throw new Error(error.message);
+    if (!data || data.length === 0) {
+      throw new Error('Nenhum registro foi alterado. Verifique as permissões de UPDATE (RLS) da tabela sessoes_fisioterapia no Supabase.');
+    }
+    return data;
+  }
+
+  static async remover(id) {
+    const { data, error } = await supabase
+      .from('sessoes_fisioterapia')
+      .delete()
+      .eq('id', id)
+      .select();
+
+    if (error) throw new Error(error.message);
+    if (!data || data.length === 0) {
+      throw new Error('Nenhum registro foi removido. Verifique as permissões de DELETE (RLS) da tabela sessoes_fisioterapia no Supabase.');
+    }
+    return data;
+  }
+
   static async calcularResumoUltimasSessoes(idosoId) {
     const { data: sessoes, error } = await supabase
       .from('sessoes_fisioterapia')
@@ -55,7 +88,8 @@ export class SessaoModel {
       .filter(v => !isNaN(v.sistolica) && !isNaN(v.diastolica));
 
     let mediaPA = null;
-    let tendenciaPA = 'estavel';
+    // Sem seta quando há só 1 medição (não há com o que comparar)
+    let tendenciaPA = null;
 
     if (pas.length > 0) {
       const mediaSis = Math.round(pas.reduce((a, b) => a + b.sistolica, 0) / pas.length);
@@ -63,6 +97,7 @@ export class SessaoModel {
       mediaPA = `${mediaSis}/${mediaDia}`;
 
       if (pas.length >= 2) {
+        tendenciaPA = 'estavel';
         if (pas[0].sistolica > pas[pas.length - 1].sistolica) tendenciaPA = 'subindo';
         else if (pas[0].sistolica < pas[pas.length - 1].sistolica) tendenciaPA = 'descendo';
       }
@@ -72,8 +107,10 @@ export class SessaoModel {
     const fcs = sessoes.map(s => s.frequencia_cardiaca).filter(v => v !== null && v !== undefined);
     const mediaFC = fcs.length > 0 ? Math.round(fcs.reduce((a, b) => a + b, 0) / fcs.length) : null;
 
-    let tendenciaFC = 'estavel';
+    // Sem seta quando há só 1 medição (não há com o que comparar)
+    let tendenciaFC = null;
     if (fcs.length >= 2) {
+      tendenciaFC = 'estavel';
       if (fcs[0] > fcs[fcs.length - 1]) tendenciaFC = 'subindo';
       else if (fcs[0] < fcs[fcs.length - 1]) tendenciaFC = 'descendo';
     }
@@ -82,8 +119,10 @@ export class SessaoModel {
     const spo2s = sessoes.map(s => s.saturacao_oxigenio).filter(v => v !== null && v !== undefined);
     const mediaSpO2 = spo2s.length > 0 ? Math.round(spo2s.reduce((a, b) => a + b, 0) / spo2s.length) : null;
 
-    let tendenciaSpO2 = 'estavel';
+    // Sem seta quando há só 1 medição (não há com o que comparar)
+    let tendenciaSpO2 = null;
     if (spo2s.length >= 2) {
+      tendenciaSpO2 = 'estavel';
       if (spo2s[0] > spo2s[spo2s.length - 1]) tendenciaSpO2 = 'subindo';
       else if (spo2s[0] < spo2s[spo2s.length - 1]) tendenciaSpO2 = 'descendo';
     }
