@@ -6,12 +6,16 @@
   <title>FisioLIV - Lar de Idosos</title>
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Estilos e cores da marca FisioLIV -->
+  <link href="./css/style.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm mb-4">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="#">FisioLIV</a>
+      <a class="navbar-brand py-1" href="#">
+        <img src="./logo.png" alt="FisioLIV - Lar do Irmão Velho" class="logo-fisioliv">
+      </a>
     </div>
   </nav>
 
@@ -20,9 +24,10 @@
       <!-- Formulário de Cadastro -->
       <div class="col-12 col-md-4">
         <div class="card shadow-sm">
-          <div class="card-header bg-white fw-bold">Cadastrar Idoso</div>
+          <div class="card-header bg-white fw-bold" id="titulo-form-idoso">Cadastrar Idoso</div>
           <div class="card-body">
             <form id="form-idoso">
+              <input type="hidden" id="idoso-id">
               <div class="mb-3">
                 <label for="nome" class="form-label">Nome Completo</label>
                 <input type="text" id="nome" class="form-control" required placeholder="Ex: Maria Silva">
@@ -31,7 +36,8 @@
                 <label for="dataNascimento" class="form-label">Data de Nascimento</label>
                 <input type="date" id="dataNascimento" class="form-control" required>
               </div>
-              <button type="submit" class="btn btn-primary w-100">Salvar Idoso</button>
+              <button type="submit" class="btn btn-primary w-100" id="btn-salvar-idoso">Salvar Idoso</button>
+              <button type="button" class="btn btn-outline-secondary w-100 mt-2 d-none" id="btn-cancelar-idoso">Cancelar Edição</button>
             </form>
           </div>
         </div>
@@ -83,9 +89,10 @@
           <!-- Formulário de Nova Sessão -->
           <div class="card mb-4 bg-light">
             <div class="card-body">
-              <h6 class="card-title fw-bold mb-3">Registrar Nova Sessão</h6>
+              <h6 class="card-title fw-bold mb-3" id="titulo-form-sessao">Registrar Nova Sessão</h6>
               <form id="form-sessao">
                 <input type="hidden" id="sessao-idoso-id">
+                <input type="hidden" id="sessao-id">
                 
                 <div class="row g-2 mb-2">
                   <div class="col-12 col-md-4">
@@ -107,7 +114,8 @@
                   <textarea id="observacoes" class="form-control form-control-sm" rows="2" placeholder="Descreva os exercícios realizados e a resposta do paciente..."></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-sm btn-primary w-100">Salvar Sessão</button>
+                <button type="submit" class="btn btn-sm btn-primary w-100" id="btn-salvar-sessao">Salvar Sessão</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-2 d-none" id="btn-cancelar-sessao">Cancelar Edição</button>
               </form>
             </div>
           </div>
@@ -118,6 +126,22 @@
             <!-- Renderizado dinamicamente via SessaoView.js -->
           </div>
 
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação (antes de remover) -->
+  <div class="modal fade" id="modalConfirmacao" tabindex="-1" aria-labelledby="modalConfirmacaoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h6 class="fw-bold mb-2" id="modalConfirmacaoLabel">Confirmar remoção</h6>
+          <p class="small text-muted mb-0" id="texto-confirmacao"></p>
+        </div>
+        <div class="modal-footer py-2">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-sm btn-danger" id="btn-confirmar-remocao">Remover</button>
         </div>
       </div>
     </div>
