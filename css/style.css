@@ -1,0 +1,53 @@
+/* Cores da marca FisioLIV (tiradas da logo) */
+:root {
+  --fisioliv-verde: #127a6c;
+  --fisioliv-verde-escuro: #0e6156;
+  --fisioliv-verde-texto: #1a4f4a;
+  --fisioliv-laranja: #c4410f;
+
+  --bs-primary: var(--fisioliv-verde);
+  --bs-primary-rgb: 18, 122, 108;
+  --bs-link-color: var(--fisioliv-verde);
+}
+
+/* Logo no topo */
+.logo-fisioliv {
+  height: 48px;
+  width: auto;
+  display: block;
+}
+
+/* Botões no verde da marca */
+.btn-primary {
+  --bs-btn-bg: var(--fisioliv-verde);
+  --bs-btn-border-color: var(--fisioliv-verde);
+  --bs-btn-hover-bg: var(--fisioliv-verde-escuro);
+  --bs-btn-hover-border-color: var(--fisioliv-verde-escuro);
+  --bs-btn-active-bg: var(--fisioliv-verde-escuro);
+  --bs-btn-active-border-color: var(--fisioliv-verde-escuro);
+  --bs-btn-disabled-bg: var(--fisioliv-verde);
+  --bs-btn-disabled-border-color: var(--fisioliv-verde);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--fisioliv-verde);
+  --bs-btn-border-color: var(--fisioliv-verde);
+  --bs-btn-hover-bg: var(--fisioliv-verde);
+  --bs-btn-hover-border-color: var(--fisioliv-verde);
+  --bs-btn-active-bg: var(--fisioliv-verde-escuro);
+  --bs-btn-active-border-color: var(--fisioliv-verde-escuro);
+}
+
+/* Botão de salvar sessão no laranja da marca */
+#btn-salvar-sessao {
+  --bs-btn-bg: var(--fisioliv-laranja);
+  --bs-btn-border-color: var(--fisioliv-laranja);
+  --bs-btn-hover-bg: #a8370c;
+  --bs-btn-hover-border-color: #a8370c;
+  --bs-btn-active-bg: #a8370c;
+}
+
+.card-header,
+.card-title {
+  color: var(--fisioliv-verde-texto);
+}
